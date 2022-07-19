@@ -20,13 +20,13 @@
 //   console.log(`Server running on port ${PORT}`);
 // });
 //dependancies
-const mysql = require("mysql2");
+const mysql = require("mysql");
 const inquirer = require("inquirer");
-const connection = require("mysql2/typings/mysql/lib/Connection");
+// connection = require("mysql2/typings/mysql/lib/Connection");
 require("console.table");
 
 //CONNECT TO DATABASE
-const db = mysql.createConnection(
+const connection = mysql.createConnection(
   {
     host: "localhost",
     // Your MySQL username,
@@ -42,6 +42,7 @@ connection.connect((err) => {
   runPrompt();
 });
 
+console.table("\n-----------Employee Tracker-------------\n");
 //run prompt function
 function runPrompt() {
   inquirer({
@@ -82,23 +83,68 @@ function runPrompt() {
 
 //view all employees function
 function viewEmployees() {
-      var begin = "SELECT * FROM employee";
-  connection.begin (begin, function(err,res) {
-        console.log(`Employees:`)
-        res.forEach(employee => {
-              console.log(`ID: ${employee.id} | Name: ${employee.first_name} ${employee.last_name} | Role ID: ${employee.role_id} | Manager ID: ${employee.manager_id}`);
-
-        })
-        runPrompt();
-  }
- 
+  var begin = "SELECT * FROM employee";
+  connection.begin(begin, function (err, res) {
+    console.log(`Employees:`);
+    res.forEach((employee) => {
+      console.log(
+        `ID: ${employee.id} | Name: ${employee.first_name} ${employee.last_name} | Role ID: ${employee.role_id} | Manager ID: ${employee.manager_id}`
+      );
+    });
+    runPrompt();
+  });
 }
+
 //view department function
 function viewDepartment() {
-  var query = "SELECT * FROM department";
+  var begin = "SELECT * FROM department";
+  connection.begin(begin, function (err, res) {
+    console.log(`Department:`);
+    res.forEach((department) => {
+      console.log(`ID: ${deparment.id} | Name: ${department.name}`);
+    });
+    runPrompt();
+  });
 }
 //view roles function
-//add employee function
+function viewRoles() {
+  var begin = "SELECT * FROM  role";
+  connection.begin(begin, function (err, res) {
+    console.log(`Roles:`);
+    res.forEach((role) => {
+      console.log(
+        `ID: ${role.id} | Title: ${role.title} | Salary: ${role.salary} | Department ID: ${role.id}`
+      );
+    });
+    runPrompt();
+  });
+}
+//add employee function//do i need to add async
+function addEmployee() {
+      connection.begin('SELECT * FROM role', function(err,res) {
+            inquirer 
+            .prompt([{
+                  name: "firstName",
+                  type:"input",
+                  message: "What is Employees first name?",
+            },
+            {
+                  name: "lastName",
+                  type: "input",
+                  message: " What is Employees last name?",
+            },
+            {
+                  name: "Role",
+                  type:'list',
+                  message: "What is the role of the employee?",
+                 choices: 
+                 //need help how do i input the roles?
+            }
+      ])
+      })
+}
+
 //add department function
+function addDepartment() {}
 //add role department
 //update role department
