@@ -5,3 +5,5 @@ VALUES
 ('Finance'),
 ('Sales'),
 ('Legal');
+
+INSERT INTO role()
