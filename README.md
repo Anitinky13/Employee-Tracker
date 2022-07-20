@@ -72,4 +72,4 @@ node server.js
 
 GitHub: Anitinky13
 Email: ayefanova1@gmail.com
-[link to video](https://drive.google.com/file/d/1q-YfVTC8ubYhNG4oupkorS5m7av1RwSE/view)
+[link to video](https://drive.google.com/file/d/1q-YfVTC8ubYhNG4oupkorS5m7av1RwSE/view?usp=sharing)
