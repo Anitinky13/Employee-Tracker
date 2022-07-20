@@ -21,6 +21,7 @@
 // });
 //dependancies
 const mysql = require("mysql2");
+//need to use inquirer for the questions prompts
 const inquirer = require("inquirer");
 // connection = require("mysql2/typings/mysql/lib/Connection");
 const console = require("console");
@@ -37,13 +38,14 @@ const connection = mysql.createConnection(
   },
   console.log("Connected to the election database.")
 );
+//if theres a connection error this will throw an error.
 connection.connect((err) => {
   if (err) throw err;
   runPrompt();
 });
 
 console.table("\n-----------Employee Tracker-------------\n");
-//run prompt function
+//run prompt function, this first thing a user will see.
 function runPrompt() {
   inquirer
     .prompt({
@@ -53,14 +55,15 @@ function runPrompt() {
       choices: [
         "View All Employees",
         "View Department",
-        "View  Roles",
+        "View Roles",
         "Add A Department",
         "Add Role",
-        "Add An Employee",
-        "Update Employee Role",
+        "Add Employee",
+        "Update  Role",
         "End",
       ],
     })
+    //if the answer selected one of these then show that what the user chose. other wise end the prompt function.
     .then(function (answers) {
       console.log(answers);
       if (answers.selection === "View All Employees") {
@@ -83,11 +86,13 @@ function runPrompt() {
     });
 }
 
-//view all employees function
+//view all employees function,, if a user selects to see all employees, then this will get the information using SELECT FROM employee
 const viewAllEmployees = () => {
   const query = "SELECT * FROM employee";
+  //if theres an error, this will throw an error.
   connection.query(query, (err, res) => {
     if (err) throw err;
+    //other wise it will show the information.
     console.table(res);
     // console.log(`Employees:`);
     // res.forEach((employee) => {
@@ -97,9 +102,10 @@ const viewAllEmployees = () => {
   runPrompt();
 };
 
-//view department function
+//view department function, if the user selects to view the department, it will use the SELECT FROM  department.
 const viewDepartment = () => {
   const query = "SELECT * FROM department";
+  //if theres an error. it will throw the error.
   connection.query(query, (err, res) => {
     if (err) throw err;
     console.table(res);
@@ -110,9 +116,10 @@ const viewDepartment = () => {
   });
   runPrompt();
 };
-//view roles function
+//view roles function, if the user selects to view Roles. this will use the SELECT FROM role.
 const viewRoles = () => {
   const query = "SELECT * FROM  role";
+  //if theres an error this will throw an error.
   connection.query(query, (err, res) => {
     if (err) throw err;
     console.table(res);
@@ -124,16 +131,19 @@ const viewRoles = () => {
   runPrompt();
 };
 
-//add employee function//do i need to add async
+//add employee function, if user wants to add an employee, this will let the user add.
 const addEmployee = () => {
   connection.query("SELECT * FROM role", (err, roles) => {
+    //if theres an error. it will console log the error.
     if (err) console.log(err);
     roles = roles.map((role) => {
+      //otherwise it will return the role title and role id.
       return {
         name: role.title,
         value: role.id,
       };
     });
+    //this inquirer prompt will ask the question to add the employee.
     inquirer
       .prompt([
         {
@@ -150,7 +160,7 @@ const addEmployee = () => {
           name: "Role",
           type: "list",
           message: "What is the role of the employee?",
-          choices: role,
+          choices: roles,
           //                  //need help how do i input the roles?
         },
         {
@@ -165,13 +175,15 @@ const addEmployee = () => {
         connection.query(
           "INSERT INTO employee SET ?",
           {
-            first_name: data.first_name,
-            last_name: data.last_name,
-            role_id: data.role_id,
-            manager_id: data.manager_id,
+            first_name: data.firstName,
+            last_name: data.lastName,
+            role_id: data.role,
+            manager_id: data.managerId,
           },
+          //if theres an error it will return error
           (err) => {
             if (err) throw err;
+            //other wise it will update the employees.
             console.log("Updated Employees;");
             viewAllEmployees();
           }
@@ -195,7 +207,7 @@ const addDepartment = () => {
       connection.query(
         "INSERT INTO department SET ?",
         {
-          name: data.newDepartment,
+          name: data.department,
         },
         function (err) {
           if (err) throw err;
@@ -205,16 +217,19 @@ const addDepartment = () => {
       viewDepartment();
     });
 };
-// //add role department
+// //add role department, if a user wants to add a role, this function will be used.
 const addRole = () => {
   connection.query("SELECT * FROM department", (err, department) => {
+    //if theres an error. then this will throw an error.
     if (err) console.log(err);
     department = department.map((department) => {
+      //otherwise it will return the name and id
       return {
         name: department.name,
         value: department.id,
       };
     });
+    //this will prompt the question
     inquirer
       .prompt([
         {
@@ -262,9 +277,9 @@ const updateRole = () => {
         value: employee.id,
       };
     });
-    connection.query("SELECT * FROM role", (err, role) => {
+    connection.query("SELECT * FROM role", (err, roles) => {
       if (err) console.log(err);
-      role = role.map((role) => {
+      roles = roles.map((role) => {
         return {
           name: role.title,
           value: role.id,
@@ -290,10 +305,10 @@ const updateRole = () => {
             "UPDATE employee SET  ? WHERE ?",
             [
               {
-                role_id: data.SelectRole,
+                role_id: data.role,
               },
               {
-                id: data.selectEmployee,
+                id: data.employee,
               },
             ],
             function (err) {
